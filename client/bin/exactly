@@ -1,0 +1,40 @@
+#!/usr/bin/python
+"""Binary exact search 
+
+Usage:
+  exactly index <root>
+  exactly search
+
+Options:
+  -h --help     Show this screen.
+  --version     Show version.
+"""
+from docopt import docopt
+import subprocess
+import sys
+from exactly import console
+
+
+def get_version():
+    try:
+        with open("/opt/exactly/lib/python/VERSION", "r") as f:
+            return f.read()
+    except:
+        return "UNKNOWN"
+
+
+def index(root_folder):
+    p = subprocess.Popen(['java', '-jar', '/opt/exactly/lib/java/exactly-server.jar', '--dir=' + root_folder])
+    return p.wait()
+
+    
+def search():
+    console.ExactlyConsole.main()
+
+    
+if __name__ == '__main__':
+    args = docopt(__doc__, version=get_version())
+    if args['index']:
+        sys.exit(index(args['<root>']))
+    elif args['search']:
+        search()
