@@ -142,13 +142,13 @@ Hit format:
 
 # TODO
 
-[ ] Improve console - display document paths and more context on demand
-[ ] Improve console - display server connection / indexing status in status-bar
-[ ] Add JVM stats (mainly memory usage)
-[ ] Enhanced suffix array memory optimization
-[ ] Hexadecimal console mode (allow search for binary strings)
-[ ] Add memory performance test (comparison with Lucene)
-[ ] Change the included Swing GUI code to REST client mode
-[ ] Allow UTF-8 String searches in GUI mode
-[ ] Better test coverage
+- [ ] Improve console - display document paths and more context on demand
+- [ ] Improve console - display server connection / indexing status in status-bar
+- [ ] Add JVM stats (mainly memory usage)
+- [ ] Enhanced suffix array memory optimization
+- [ ] Hexadecimal console mode (allow search for binary strings)
+- [ ] Add memory performance test (comparison with Lucene)
+- [ ] Change the included Swing GUI code to REST client mode
+- [ ] Allow UTF-8 String searches in GUI mode
+- [ ] Better test coverage
 
