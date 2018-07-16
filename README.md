@@ -23,7 +23,8 @@ To compute suffix array we use [SA-IS algorithm implementation by Yuta Mori](htt
 # Building and installation
 ## Requirements
 
-So far I've only created installer for Fedora/CentOS7/RHEL7 64-bit. I haven't figured out a way to build and securely distribute RPMs yet, 
+So far I've only created installer for Fedora 64-bit. I thought that would automatically give us CentOS/RHEL 7 but there's no python3
+on those so it's Fedora only. I haven't figured out a way to build and securely distribute RPMs yet, 
 so it needs to be built from sources, which requires git and docker. Everything else will be installed only inside of the docker container.
 
 ## Build

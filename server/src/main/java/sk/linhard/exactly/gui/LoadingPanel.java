@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
-import java.text.DecimalFormat;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,7 +15,6 @@ import sk.linhard.exactly.impl.IndexingProgressReporter;
 
 public class LoadingPanel extends JPanel {
 
-	private static final DecimalFormat NFMT = new DecimalFormat("#,###,###");
 	private JLabel label;
 	private JLabel textRoot;
 	private JLabel textFiles;
@@ -106,24 +104,22 @@ public class LoadingPanel extends JPanel {
 	public void reportProgress(IndexingProgressReporter.IndexingProgress progress) {
 		if (!progress.isDoneCrawling()) {
 			label.setText("Analysing files ...");
-			textFiles.setText(NFMT.format(progress.getCrawlingProgressFiles()));
-			textBytes.setText(NFMT.format(progress.getCrawlingProgressBytes()));
+			textFiles.setText(progress.getFormattedCrawlingProgressFiles());
+			textBytes.setText(progress.getFormattedCrawlingProgressBytes());
 		} else if (!progress.isDoneLoading()) {
 			label.setText("Loading data ...");
-			textFiles.setText( //
-					NFMT.format(progress.getLoadingProgressFiles()) //
-							+ " / " + NFMT.format(progress.getCrawlingProgressFiles()));
-			textBytes.setText( //
-					NFMT.format(progress.getLoadingProgressBytes()) //
-							+ " / " + NFMT.format(progress.getCrawlingProgressBytes()));
+			textFiles.setText(progress.getFormattedLoadingProgressFiles() //
+					+ " / " + progress.getFormattedCrawlingProgressFiles());
+			textBytes.setText(progress.getFormattedLoadingProgressBytes() //
+					+ " / " + progress.getFormattedCrawlingProgressBytes());
 		} else if (!progress.isDoneIndexing()) {
 			label.setText("Indexing ...");
-			textFiles.setText(NFMT.format(progress.getLoadingProgressFiles()));
-			textBytes.setText(NFMT.format(progress.getLoadingProgressBytes()));
+			textFiles.setText(progress.getFormattedLoadingProgressFiles());
+			textBytes.setText(progress.getFormattedLoadingProgressBytes());
 		} else {
 			label.setText("Enter a search query");
-			textFiles.setText(NFMT.format(progress.getLoadingProgressFiles()));
-			textBytes.setText(NFMT.format(progress.getLoadingProgressBytes()));
+			textFiles.setText(progress.getFormattedLoadingProgressFiles());
+			textBytes.setText(progress.getFormattedLoadingProgressBytes());
 		}
 	}
 

@@ -125,8 +125,8 @@ public class SearchBuilder {
 
 		@Override
 		public int read(byte[] buffer, int offset) {
-			try {
-				return IOUtils.read(new FileInputStream(file), buffer, offset, length);
+			try (FileInputStream fInputStream = new FileInputStream(file)) {
+				return IOUtils.read(fInputStream, buffer, offset, length);
 			} catch (IOException e) {
 				throw new RuntimeException("Error reading file " + file.getAbsolutePath(), e);
 			}

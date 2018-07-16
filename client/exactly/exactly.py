@@ -7,6 +7,7 @@ Created on 12 Jul 2018
 import requests
 import json
 import base64
+from requests.exceptions import ConnectionError
 
 
 class Document(object):
@@ -15,7 +16,7 @@ class Document(object):
         self.document_id = document_id
         self.document_index = document_index
         self.content = content
-        
+
     @staticmethod 
     def from_json(json):
         document_id = json["document_id"]
@@ -78,25 +79,42 @@ class ExactlyClient(object):
         Constructor
         '''
         self.uri = uri
-        
+
+    def get(self, relpath):
+        try:
+            return requests.get(self.uri + relpath)
+        except ConnectionError:
+            raise Exception("Can't connect to index at " + self.uri + ". Make sure that the index is running")
+        except Exception as e:
+            raise e
+
+    def post(self, relpath, json_req):
+        try:
+            return requests.post(self.uri + relpath, json=json.dumps(json_req))
+        except ConnectionError:
+            raise Exception("Can't connect to index at " + self.uri + ". Make sure that the index is running")
+        except Exception as e:
+            raise e
+
     def document_by_index(self, document_index):
-        r = requests.get(self.uri + "/document/" + document_index)
+        r = self.get("/document/" + document_index)
         if r.status_code == 200:
             return Document.from_json(r.json())
         else:
             return None
         
     def document_by_id(self, document_id):
-        json_req = { "document_id" : document_id }
-        r = requests.post(self.uri + "/document", json=json.dumps(json_req))
+        r = self.post("/document", { "document_id" : document_id })
         if r.status_code == 200:
             return Document.from_json(r.json())
         else:
             return None
         
-    def search(self, pattern, max_candidates=100, max_context=40):
-        json_req = { "pattern" : base64.b64encode(bytes(pattern.encode("utf-8"))), "max_candidates" : max_candidates, "max_context" : max_context }
-        r = requests.post(self.uri + "/search", json=json.dumps(json_req))
+    def search(self, pattern_bytes, max_candidates=100, max_context=40):
+        r = self.post("/search",
+            { "pattern" : base64.b64encode(pattern_bytes).decode("utf-8"),
+              "max_candidates" : max_candidates,
+              "max_context" : max_context })
         if r.status_code == 200:
             json_hits = r.json().get("hits")
             if json_hits == None:
@@ -107,9 +125,9 @@ class ExactlyClient(object):
             return None
         
     def stats(self):
-        r = requests.get(self.uri + "/stats")
+        r = self.get("/stats")
         if r.status_code == 200:
-            return Stats(r.json())
+            return Stats.from_json(r.json())
         else:
             return None
 

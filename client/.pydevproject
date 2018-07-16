@@ -4,5 +4,9 @@
 <path>/${PROJECT_DIR_NAME}</path>
 </pydev_pathproperty>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python interpreter</pydev_property>
-<pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
+<pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">python3</pydev_property>
+<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
+<path>/usr/local/lib/python3.6/site-packages/exactly-0.1.0_SNAPSHOT-py3.6.egg</path>
+<path>/usr/local/lib/python3.6/site-packages/exactly-0.1.0_SNAPSHOT-py3.6.egg/exactly</path>
+</pydev_pathproperty>
 </pydev_project>

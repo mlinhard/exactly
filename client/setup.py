@@ -6,16 +6,15 @@ def get_version():
         with open("/opt/exactly/lib/python/VERSION", "r") as f:
             return f.read()
     except Exception as e:
-        print "You need to supply VERSION file"
+        print("You need to supply VERSION file")
         raise e
 
 
 unified_version = get_version()
-print "Using version: " + unified_version
+print("Using version: " + unified_version)
 
 setup(name='exactly',
       version=unified_version,
-      release=1,
       description='Binary exact search',
       url='http://github.com/mlinhard/exactly',
       author='Michal Linhard',

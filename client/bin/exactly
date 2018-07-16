@@ -1,19 +1,21 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """Binary exact search 
 
 Usage:
-  exactly index <root>
-  exactly search
+  exactly [options] index <root>
+  exactly [options] search
 
 Options:
-  -h --help     Show this screen.
-  --version     Show version.
+  -h --help   Show this screen.
+  --version   Show version.
+  --debug-log <log-file> Debug logging to file exactly.log in current directory
+  --debug <debug-string> Start PyDev debug server. Debug string format: host:port:pydev_src
 """
 from docopt import docopt
 import subprocess
 import sys
 from exactly import console
-
+from exactly import set_debug, set_debug_logging
 
 def get_version():
     try:
@@ -29,12 +31,14 @@ def index(root_folder):
 
     
 def search():
-    console.ExactlyConsole.main()
+    return console.ExactlyConsole.main()
 
     
 if __name__ == '__main__':
     args = docopt(__doc__, version=get_version())
+    set_debug_logging(args['--debug-log'])
+    set_debug(args['--debug'])
     if args['index']:
         sys.exit(index(args['<root>']))
     elif args['search']:
-        search()
+        sys.exit(search())

@@ -76,8 +76,8 @@ public class SearchServer {
 			search = Pair.of(aSearch, anIdToIdx);
 		}
 		IndexingProgress progress = reporter.getProgress();
-		log.info("Done indexing {} files, {} bytes total", progress.getLoadingProgressFiles(),
-				progress.getLoadingProgressBytes());
+		log.info("Done indexing {} files, {} bytes total", progress.getFormattedLoadingProgressFiles(),
+				progress.getFormattedLoadingProgressBytes());
 	}
 
 	// TODO: this is lame, search by document ID should be a suffix array search

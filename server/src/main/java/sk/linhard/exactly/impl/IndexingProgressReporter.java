@@ -80,6 +80,8 @@ public class IndexingProgressReporter {
 	}
 
 	public static class IndexingProgress {
+		private static final DecimalFormat NFMT = new DecimalFormat("#,###,###");
+
 		private final boolean doneCrawling;
 		private final boolean doneLoading;
 		private final boolean doneIndexing;
@@ -127,6 +129,22 @@ public class IndexingProgressReporter {
 
 		public int getLoadingProgressFiles() {
 			return loadingProgressFiles;
+		}
+
+		public String getFormattedCrawlingProgressBytes() {
+			return NFMT.format(crawlingProgressBytes);
+		}
+
+		public String getFormattedCrawlingProgressFiles() {
+			return NFMT.format(crawlingProgressFiles);
+		}
+
+		public String getFormattedLoadingProgressBytes() {
+			return NFMT.format(loadingProgressBytes);
+		}
+
+		public String getFormattedLoadingProgressFiles() {
+			return NFMT.format(loadingProgressFiles);
 		}
 
 	}
