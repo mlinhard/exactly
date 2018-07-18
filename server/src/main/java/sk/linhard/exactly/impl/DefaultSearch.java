@@ -583,6 +583,17 @@ public class DefaultSearch implements Search<byte[]> {
 		public Iterator<Hit<byte[]>> iterator() {
 			return Collections.emptyIterator();
 		}
+
+		@Override
+		public Iterable<Hit<byte[]>> skipIterator(int offset) {
+			return new Iterable<Hit<byte[]>>() {
+
+				@Override
+				public Iterator<Hit<byte[]>> iterator() {
+					return Collections.emptyIterator();
+				}
+			};
+		}
 	}
 
 	class DefaultSearchResult implements SearchResult<byte[]> {
@@ -739,15 +750,26 @@ public class DefaultSearch implements Search<byte[]> {
 
 		@Override
 		public Iterator<Hit<byte[]>> iterator() {
-			return new HitIterator();
+			return new HitIterator(0);
+		}
+
+		@Override
+		public Iterable<Hit<byte[]>> skipIterator(int offset) {
+			return new Iterable<Hit<byte[]>>() {
+
+				@Override
+				public Iterator<Hit<byte[]>> iterator() {
+					return new HitIterator(offset);
+				}
+			};
 		}
 
 		class HitIterator implements Iterator<Hit<byte[]>> {
 
 			private int idx;
 
-			public HitIterator() {
-				this.idx = -1;
+			public HitIterator(int offset) {
+				this.idx = offset - 1;
 			}
 
 			@Override

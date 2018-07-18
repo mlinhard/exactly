@@ -198,6 +198,17 @@ public class StringSearchBuilder {
 			return new StringHit(encoding, searchResult.hitWithPosition(document, position));
 		}
 
+		@Override
+		public Iterable<Hit<String>> skipIterator(int offset) {
+			return new Iterable<Hit<String>>() {
+
+				@Override
+				public Iterator<Hit<String>> iterator() {
+					return new StringHitIterator(encoding, searchResult.skipIterator(offset).iterator());
+				}
+			};
+		}
+
 	}
 
 	static class StringHit implements Hit<String> {

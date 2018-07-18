@@ -11,40 +11,48 @@ public class SearchRequest {
 
 	private final byte[] pattern;
 
-	@JsonProperty("max_candidates")
-	private final int maxCandidates;
+	@JsonProperty("max_hits")
+	private final int maxHits;
 
 	@JsonProperty("max_context")
 	private final int maxContext;
+
+	private final int offset;
 
 	public SearchRequest(String jsonStr) {
 		try {
 			JSONObject jsonObj = new JSONObject(jsonStr);
 			pattern = Base64.getDecoder().decode(jsonObj.getString("pattern"));
-			maxCandidates = jsonObj.getInt("max_candidates");
+			maxHits = jsonObj.getInt("max_hits");
 			maxContext = jsonObj.getInt("max_context");
+			offset = jsonObj.has("offset") ? jsonObj.getInt("offset") : 0;
 		} catch (JSONException e) {
 			throw new RuntimeException("Error parsing JSON", e);
 		}
 	}
 
-	public SearchRequest(byte[] pattern, int maxCandidates, int maxContext) {
+	public SearchRequest(byte[] pattern, int maxHits, int maxContext, int offset) {
 		super();
 		this.pattern = pattern;
-		this.maxCandidates = maxCandidates;
+		this.maxHits = maxHits;
 		this.maxContext = maxContext;
+		this.offset = offset;
 	}
 
 	public byte[] getPattern() {
 		return pattern;
 	}
 
-	public int getMaxCandidates() {
-		return maxCandidates;
+	public int getMaxHits() {
+		return maxHits;
 	}
 
 	public int getMaxContext() {
 		return maxContext;
+	}
+
+	public int getOffset() {
+		return offset;
 	}
 
 }

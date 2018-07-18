@@ -32,6 +32,7 @@ import sk.linhard.exactly.SearchResult;
 import sk.linhard.exactly.impl.FileLoader;
 import sk.linhard.exactly.impl.IndexingProgressReporter;
 import sk.linhard.exactly.impl.IndexingProgressReporter.IndexingProgress;
+import sk.linhard.exactly.rest.SearchResponse.Cursor;
 
 @Scope(value = "singleton")
 @Component
@@ -108,18 +109,21 @@ public class SearchServer {
 		Pair<Search<byte[]>, Map<String, Integer>> search = checkSearch();
 		SearchResult<byte[]> searchResult = search.getKey().find(request.getPattern());
 		List<SearchResponse.Hit> hits = new ArrayList<>(searchResult.size());
-
+		Cursor cursor = null;
 		int hitCount = 0;
-		for (Hit<byte[]> hit : searchResult) {
+		for (Hit<byte[]> hit : searchResult.skipIterator(request.getOffset())) {
 			HitContext<byte[]> ctx = hit.charContext(request.getMaxContext(), request.getMaxContext());
 			hits.add(new SearchResponse.Hit(hit.position(), hit.document().id(), ctx.before(), ctx.after()));
 			hitCount++;
-			if (hitCount >= request.getMaxCandidates()) {
+			if (hitCount >= request.getMaxHits()) {
+				if (hitCount < searchResult.size()) {
+					cursor = new Cursor(searchResult.size(), request.getOffset());
+				}
 				break;
 			}
 		}
 
-		return new SearchResponse(hits);
+		return new SearchResponse(hits, cursor);
 	}
 
 	public SearchServerStats stats() {

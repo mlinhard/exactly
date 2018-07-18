@@ -7,13 +7,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SearchResponse {
 
 	private final List<Hit> hits;
+	private final Cursor cursor;
 
-	public SearchResponse(List<Hit> hits) {
+	public SearchResponse(List<Hit> hits, Cursor cursor) {
 		this.hits = hits;
+		this.cursor = cursor;
 	}
 
 	public List<Hit> getHits() {
 		return hits;
+	}
+
+	public Cursor getCursor() {
+		return cursor;
 	}
 
 	public static class Hit {
@@ -50,6 +56,28 @@ public class SearchResponse {
 
 		public byte[] getCtxAfter() {
 			return ctxAfter;
+		}
+
+	}
+
+	public static class Cursor {
+
+		@JsonProperty("complete_size")
+		private final int completeSize;
+
+		private final int offset;
+
+		public Cursor(int completeSize, int offset) {
+			this.completeSize = completeSize;
+			this.offset = offset;
+		}
+
+		public int getCompleteSize() {
+			return completeSize;
+		}
+
+		public int getOffset() {
+			return offset;
 		}
 
 	}

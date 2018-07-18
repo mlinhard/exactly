@@ -3,7 +3,8 @@ Tests for console.py
 '''
 import unittest
 import exactly
-from exactly.console import HitLine, SafeString
+from exactly.safestring import SafeString
+from exactly.view import Colors
 from tests.util import dehex
 
 
@@ -63,25 +64,27 @@ class Test(unittest.TestCase):
         self.assertEqual(ltss.highlights(), expected_highlights)
     
     def assert_hll(self, length, bef, pat, aft, expected_display_line, expected_highlights):
-        hll = exactly.console.HitLineLayout(length, dehex(bef), dehex(pat), dehex(aft))
+        hll = exactly.hitline.HitLineLayout(length, dehex(bef), dehex(pat), dehex(aft), False, Colors.mock())
         self.assertEqual(hll.display_str(), expected_display_line)
         self.assertEqual(hll.highlights(), expected_highlights)
     
     def test_normal_all_fits(self):
+        color = Colors.mock()
         self.assert_hll(50, "0123456789", "0123456789", "0123456789",
             "..........012345678901234567890123456789..........", [ 
-            (0, 10, HitLine.COLOR_LINE_PAD),
-            (10, 10, HitLine.COLOR_LINE_CTX),
-            (20, 10, HitLine.COLOR_LINE_PAT),
-            (30, 10, HitLine.COLOR_LINE_CTX),
-            (40, 10, HitLine.COLOR_LINE_PAD)])
+            (0, 10, color.LINE_PAD),
+            (10, 10, color.LINE_CTX),
+            (20, 10, color.LINE_PAT),
+            (30, 10, color.LINE_CTX),
+            (40, 10, color.LINE_PAD)])
 
     def test_normal_ctx_cut(self):
+        color = Colors.mock()
         self.assert_hll(30, "012345678901234567890123456789", "0123456789", "012345678901234567890123456789",
             "012345678901234567890123456789", [
-            (0, 10, HitLine.COLOR_LINE_CTX),
-            (10, 10, HitLine.COLOR_LINE_PAT),
-            (20, 10, HitLine.COLOR_LINE_CTX)])
+            (0, 10, color.LINE_CTX),
+            (10, 10, color.LINE_PAT),
+            (20, 10, color.LINE_CTX)])
 
 
 if __name__ == "__main__":

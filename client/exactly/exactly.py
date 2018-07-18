@@ -63,10 +63,52 @@ class Hit(object):
 
 class Query(object):
 
-    def __init__(self, pattern, max_candidates=100, max_context=40):
-        self.pattern = pattern
-        self.max_candidates = max_candidates
-        self.max_context = max_context
+    def __init__(self, pattern_bytes, max_hits=100, max_context=40, offset=0):
+        self.pattern_bytes = pattern_bytes
+        self._max_hits = max_hits
+        self._max_context = max_context
+        self._offset = offset
+        
+    def json(self):
+        json = {
+            "pattern" : base64.b64encode(self.pattern_bytes).decode("utf-8"),
+            "max_hits" :  self._max_hits,
+            "max_context" : self._max_context }
+        if self._offset != 0:
+            json["offset"] = self._offset
+        return json
+
+
+class SearchResult(object):
+    
+    def __init__(self, hits, complete_size):
+        self._hits = hits
+        self._complete_size = complete_size
+        
+    def hits(self):
+        return self._hits
+        
+    def complete_size(self):
+        if self._complete_size == None:
+            return len(self._hits)
+        else:
+            return self._complete_size
+    
+    def complete_size_marker(self):
+        return self._complete_size
+  
+    def is_complete(self):
+        return self._complete_size == None or self._complete_size <= len(self._hits)
+            
+    @staticmethod
+    def from_json(json):
+        json_hits = json.get("hits")
+        if json_hits == None:
+            raise Exception("Unexpected response format")
+        hits = [Hit.from_json(json_hit) for json_hit in json_hits]
+        cursor = json.get("cursor")
+        complete_size = cursor.get("complete_size") if cursor != None else None
+        return SearchResult(hits, complete_size)
 
 
 class ExactlyClient(object):
@@ -110,17 +152,10 @@ class ExactlyClient(object):
         else:
             return None
         
-    def search(self, pattern_bytes, max_candidates=100, max_context=40):
-        r = self.post("/search",
-            { "pattern" : base64.b64encode(pattern_bytes).decode("utf-8"),
-              "max_candidates" : max_candidates,
-              "max_context" : max_context })
+    def search(self, query):
+        r = self.post("/search", query.json())
         if r.status_code == 200:
-            json_hits = r.json().get("hits")
-            if json_hits == None:
-                raise Exception("Unexpected response format")
-            else:
-                return [ Hit.from_json(json_hit) for json_hit in json_hits]
+            return SearchResult.from_json(r.json())
         else:
             return None
         

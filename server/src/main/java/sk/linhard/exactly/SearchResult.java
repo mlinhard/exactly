@@ -47,4 +47,6 @@ public interface SearchResult<TContent> extends Iterable<Hit<TContent>> {
 	boolean hasPosition(int document, int position);
 
 	Hit<TContent> hitWithPosition(int document, int position);
+
+	Iterable<Hit<TContent>> skipIterator(int offset);
 }
