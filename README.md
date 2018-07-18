@@ -45,6 +45,27 @@ Just install the RPM with yum/dnf tool. After this you should be able to use the
 - Java 1.8 JRE - the REST server is currently written as Spring boot REST service
 - Python - the exactly command-line console tool is written in Python
 
+## Non-RPM installation
+
+I haven't yet produced a convenient installer for other linux distros, but it shouldn't be that hard to make **exactly** running without
+the installer. 
+
+### Server
+The server is a standard mavenized Java 1.8 project. It needs to be built by standard `mvn clean install` command (in server folder).
+This will produce `server/target/exactly-server-<version>.jar` file. This is runnable by 
+ 
+ `java -jar exactly-server-<version>.jar --dir=<root>`
+ 
+ where `<root>` is the folder to be indexed
+
+### Client
+
+You need to be root to perform some of this. Create file `/opt/exactly/lib/python/VERSION` with version string 
+(it should reflect the current version, e.g. same as in the `exactly-server-<version>.jar` filename). Then the
+python client should be installable with `python3 setup.py install` inside of the client folder. After this you could place
+client/bin/exactly into your /usr/bin/exactly and you should be fine.
+
+
 # Usage
 
 ## Command line
