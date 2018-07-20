@@ -41,6 +41,8 @@ class ExactlyConsole(object):
                     self._pattern_append(c)
                 elif c == curses.KEY_BACKSPACE:
                     self._pattern_back()
+                elif c == 410:  # terminal resized
+                    self._resize_view()
             else:
                 self._log.debug("Indexing ... sleeping 0.5 sec before fetching new status from server")
                 curses.napms(500)
@@ -73,8 +75,20 @@ class ExactlyConsole(object):
     def _refresh_status(self):
         stats = self._stats
         if stats.done_indexing:
-            self._view.update_status_bar("Indexed %d bytes in %d files" % (stats.indexed_bytes, stats.indexed_files))
-            self._view.update_search_bar_message("Please enter a search query")
+            status_msg = "Indexed {:,} bytes in {:,} files".format(
+                stats.indexed_bytes,
+                stats.indexed_files)
+            if self._h.has_pattern():
+                if self._h.has_hits():
+                    status_msg += " - {:,} hits".format(self._h.num_hits())
+                    if self._selected_hit_idx != None:
+                        status_msg += " - current: {:>16,} wsize: {:>4} woffset: {:>16,}".format(self._selected_hit_idx, self._view.max_displayable_hits(), self._displayed_hit_offset)
+                else:
+                    status_msg += " - No hits"
+                self._view.update_search_bar_pattern(self._h.pattern_bytes(), self._h.has_hits())
+            else:
+                self._view.update_search_bar_message("Please enter a search query")
+            self._view.update_status_bar(status_msg)
         elif stats.done_loading or stats.done_crawling:
             self._view.update_status_bar("Indexing ...");
             self._view.update_search_bar_message("")
@@ -95,6 +109,7 @@ class ExactlyConsole(object):
             new_hit = self._h.hit(self._selected_hit_idx)
             self._view.cursor_up(self._h.pattern_bytes(), selected_line, selected_hit, new_hit)
         self._log_cursor()
+        self._refresh_status()
                 
     def _cursor_down(self):
         if not self._h.has_hits():
@@ -112,23 +127,30 @@ class ExactlyConsole(object):
             new_hit = self._h.hit(self._selected_hit_idx)
             self._view.cursor_down(self._h.pattern_bytes(), selected_line, selected_hit, new_hit) 
         self._log_cursor()
+        self._refresh_status()
         
     def _pattern_append(self, c):
         self._h.pattern_append(c)
         self._reset_cursor()
         self._view.update_hit_table(self._h.pattern_bytes(), self._h.hits(self._displayed_hit_offset), None)
-        self._view.update_search_bar_pattern(self._h.pattern_bytes(), self._h.has_hits())
+        self._refresh_status()
         
     def _pattern_back(self):
         self._h.pattern_back()
         self._reset_cursor()
         self._view.update_hit_table(self._h.pattern_bytes(), self._h.hits(self._displayed_hit_offset), None)
-        self._view.update_search_bar_pattern(self._h.pattern_bytes(), self._h.has_hits())
+        self._refresh_status()
 
     def _reset_cursor(self):
         self._selected_hit_idx = None
         self._displayed_hit_offset = 0
         
+    def _resize_view(self):
+        self._view.resize()
+        self._reset_cursor()
+        self._view.update_hit_table(self._h.pattern_bytes(), self._h.hits(self._displayed_hit_offset), None)
+        self._refresh_status()
+
     def _log_cursor(self):
         self._log.debug("Cursor: size: %i, index: %i, offset: %i, window: %i",
             self._h.num_hits(),

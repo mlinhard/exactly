@@ -60,7 +60,7 @@ class HitProvider(object):
         self._ensure_hits(self._view.max_displayable_hits())
         return len(self._hits) > 0
     
-    def _has_pattern(self):
+    def has_pattern(self):
         return len(self._pattern) > 0
 
     def pattern_bytes(self):
@@ -74,7 +74,7 @@ class HitProvider(object):
         return self._complete_size if self._complete_size != None else len(self._hits)
 
     def _load_hits(self, offset, max_hits):
-        if self._has_pattern():
+        if self.has_pattern():
             pattern_bytes = self.pattern_bytes()
             max_context = self._view.max_displayable_context(len(pattern_bytes))
             return self._client.search(Query(pattern_bytes, max_hits, max_context, offset))

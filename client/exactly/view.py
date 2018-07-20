@@ -71,6 +71,19 @@ class ExactlyView(object):
         '''
         return self._hit_table.max_displayable_context(pattern_length)
 
+    def resize(self):
+        '''
+        Resize all of the view elements without refreshing the data. Data must be supplied in a following call 
+        to update* methods
+        '''
+        new_height, new_width = self._stdscr.getmaxyx()
+        self._stdscr.resize(new_height, new_width)
+        self._stdscr.erase()
+        self._stdscr.refresh()
+        self._search_bar = SearchBar(self._stdscr)
+        self._hit_table = HitTable(self._stdscr)
+        self._status_bar = StatusBar(self._stdscr)
+
 
 class Colors(object):
     
@@ -140,14 +153,14 @@ class SearchBar(object):
 
     def _print_mid(self, msg, color):
         self._win.bkgd(' ', self._color.BARS)
-        self._win.clear()
+        self._win.erase()
         try:
             s, m = divmod(self._width - len(msg), 2)
             self._win.addstr(0, s + m, msg, color | A_NORMAL)
-        except Exception as e:
-            self._log.debug("Error while printing '%s'", msg, e)
+        except:
+            self._log.debug("Error while printing '%s'", msg, exc_info=True)
         self._win.refresh()
-
+    
     
 class HitTable(object):
 
@@ -191,7 +204,7 @@ class HitTable(object):
     def update(self, pattern_bytes, hits, selected_line):
         self._win.bkgd(' ', self._color.SEARCH)
         self._win.erase()
-        for line_num, hit in enumerate(hits):
+        for line_num, hit in enumerate(hits[:self.max_displayable_hits()]):
             self._update_line(pattern_bytes, hit, line_num, selected_line)
         self._win.refresh()
         
@@ -222,7 +235,7 @@ class HitTable(object):
     def max_displayable_context(self, pattern_length):
         d, m = divmod(self._width - pattern_length, 2)
         return d + m
-
+    
             
 class StatusBar(object):
 
@@ -232,9 +245,14 @@ class StatusBar(object):
         self._width = self._win.getmaxyx()[1]
         self._color = Colors.instance()
         self._win.bkgd(' ', self._color.BARS)
+        self._log = get_logger(__name__)
         
     def msg(self, text):
-        self._win.addstr(0, 1, text, A_NORMAL)
+        self._win.erase()
+        try:
+            self._win.addstr(0, 1, text, A_NORMAL)
+        except:
+            self._log.debug("Error while printing '%s'", text, exc_info=True)        
         self._win.refresh()
 
 

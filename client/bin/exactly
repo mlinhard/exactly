@@ -8,6 +8,7 @@ Usage:
 Options:
   -h --help   Show this screen.
   --version   Show version.
+  --debug-level          Set DEBUG level for server log
   --debug-log <log-file> Debug logging to file exactly.log in current directory
   --debug <debug-string> Start PyDev debug server. Debug string format: host:port:pydev_src
 """
@@ -25,9 +26,17 @@ def get_version():
         return "UNKNOWN"
 
 
-def index(root_folder):
-    p = subprocess.Popen(['java', '-jar', '/opt/exactly/lib/java/exactly-server.jar', '--dir=' + root_folder])
-    return p.wait()
+def index(root_folder, debug):
+    cmds = ['java', '-jar' ]
+    if debug:
+        cmds.append('-Dlogging.level.sk.linhard=DEBUG')
+    cmds.append('/opt/exactly/lib/java/exactly-server.jar')
+    cmds.append('--dir=' + root_folder)
+    p = subprocess.Popen(cmds)
+    try:
+        return p.wait()
+    except KeyboardInterrupt:
+        pass
 
     
 def search():
@@ -39,6 +48,6 @@ if __name__ == '__main__':
     set_debug_logging(args['--debug-log'])
     set_debug(args['--debug'])
     if args['index']:
-        sys.exit(index(args['<root>']))
+        sys.exit(index(args['<root>'], args['--debug-level']))
     elif args['search']:
         sys.exit(search())
