@@ -118,7 +118,7 @@ public class SearchServer {
 				break;
 			}
 		}
-		if (hits.size() + request.getOffset() < searchResult.size()) {
+		if (hits.size() < searchResult.size()) {
 			cursor = new Cursor(searchResult.size(), request.getOffset());
 		}
 

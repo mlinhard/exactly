@@ -710,6 +710,9 @@ public class DefaultSearch implements Search<byte[]> {
 		}
 
 		HitContext<byte[]> charContext(int idx, int charsBefore, int charsAfter) {
+			if (charsBefore < 0 || charsAfter < 0) {
+				throw new IllegalArgumentException("Negative context length");
+			}
 			int pos = globalPosition(idx);
 			int beforeStart = checkBefore(pos, charsBefore);
 			int afterEnd = checkAfter(pos + patternLength, charsAfter);
@@ -726,6 +729,9 @@ public class DefaultSearch implements Search<byte[]> {
 		}
 
 		HitContext<byte[]> lineContext(int idx, int linesBefore, int linesAfter) {
+			if (linesBefore < 0 || linesAfter < 0) {
+				throw new IllegalArgumentException("Negative context length");
+			}
 			int patternStart = globalPosition(idx);
 			int beforeStart = linesBeforeStart(idx, linesBefore);
 			int afterEnd = linesAfterStart(idx, linesAfter);

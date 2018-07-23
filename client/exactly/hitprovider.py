@@ -48,7 +48,7 @@ class HitProvider(object):
             self._complete_size = search_result.complete_size_marker()
         else:
             cached = len(self._hits)
-            if max_hits > cached:
+            if max_hits > cached and cached < self._num_hits():
                 real_max_hits = min([self._num_hits(), max_hits])
                 if real_max_hits > 0:
                     search_result = self._load_hits(cached, real_max_hits)

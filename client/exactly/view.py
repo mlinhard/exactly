@@ -18,6 +18,7 @@ class ExactlyView(object):
         self._stdscr = stdscr
         self._search_bar = SearchBar(stdscr)
         self._hit_table = HitTable(stdscr)
+        self._hit_bar = HitBar(stdscr)
         self._status_bar = StatusBar(stdscr)
         
     def update_search_bar_pattern(self, pattern_bytes, pattern_found):
@@ -58,6 +59,12 @@ class ExactlyView(object):
         '''
         self._status_bar.msg(status_message)
         
+    def update_hit_bar(self, msg):
+        '''
+        Will display given message in hit bar
+        '''
+        self._hit_bar.msg(msg)
+        
     def max_displayable_hits(self):
         '''
         Return number of hits that can be displayed in the hit-line view
@@ -82,6 +89,7 @@ class ExactlyView(object):
         self._stdscr.refresh()
         self._search_bar = SearchBar(self._stdscr)
         self._hit_table = HitTable(self._stdscr)
+        self._hit_bar = HitBar(self._stdscr)
         self._status_bar = StatusBar(self._stdscr)
 
 
@@ -94,7 +102,7 @@ class Colors(object):
             self.PALETTE_BG = 1
             self.BARS = 2
             self.SEARCH = 3
-            self.LINE_PAT = 4
+            self.LINE_PAT_NOT = 4
             self.LINE_PAD = 5
             self.LINE_CTX = 6
             self.LINE_CTX_SPEC = 7
@@ -103,6 +111,10 @@ class Colors(object):
             self.SEL_LINE_CTX = 10
             self.SEL_LINE_CTX_SPEC = 11
             self.SEL_LINE_PAT = 12
+            self.LINE_PAT_NOT_MID = 13
+            self.LINE_PAT_MID = 14
+            self.SEL_LINE_PAT_MID = 15
+            self.SEL_HIT_BAR = 16
         else:
             i = 1
             for fg in range(0, 16):
@@ -122,6 +134,11 @@ class Colors(object):
             self.SEL_LINE_CTX = curses.color_pair(114)
             self.SEL_LINE_CTX_SPEC = curses.color_pair(126)
             self.SEL_LINE_PAT = curses.color_pair(178)
+
+            self.LINE_PAT_NOT_MID = curses.color_pair(57)
+            self.LINE_PAT_MID = curses.color_pair(57)
+            self.SEL_LINE_PAT_MID = curses.color_pair(50)
+            self.SEL_HIT_BAR = curses.color_pair(101)
 
     @classmethod
     def instance(cls):
@@ -146,12 +163,14 @@ class SearchBar(object):
         
     def update_pattern(self, pattern_bytes, pattern_found):
         limited_pattern = LimitedSafeString.from_bytes(pattern_bytes, self._width)
-        self._print_mid(limited_pattern.display_str(), self._color.LINE_PAT if pattern_found else self._color.LINE_PAT_NOT)
+        pattern_color = self._color.LINE_PAT if pattern_found else self._color.LINE_PAT_NOT
+        midmark_color = self._color.LINE_PAT_MID if pattern_found else self._color.LINE_PAT_NOT_MID
+        self._print_mid(limited_pattern.display_str(), pattern_color, limited_pattern.midmark(), midmark_color)
         
     def update_message(self, message):
-        self._print_mid(message, 0)
+        self._print_mid(message, 0, None, None)
 
-    def _print_mid(self, msg, color):
+    def _print_mid(self, msg, color, midmark, midmark_color):
         self._win.bkgd(' ', self._color.BARS)
         self._win.erase()
         try:
@@ -159,6 +178,12 @@ class SearchBar(object):
             self._win.addstr(0, s + m, msg, color | A_NORMAL)
         except:
             self._log.debug("Error while printing '%s'", msg, exc_info=True)
+        if midmark:
+            try:
+                self._win.addstr(0, midmark, "..", midmark_color | A_NORMAL)
+            except:
+                self._log.debug("Error while printing midmark", exc_info=True)
+        
         self._win.refresh()
     
     
@@ -233,8 +258,12 @@ class HitTable(object):
         return self._height
 
     def max_displayable_context(self, pattern_length):
-        d, m = divmod(self._width - pattern_length, 2)
-        return d + m
+        max_disp_pat_len = min([self._width // 3, pattern_length])
+        if max_disp_pat_len <= self._width:
+            d, m = divmod(self._width - max_disp_pat_len, 2)
+            return d + m
+        else:
+            return 0
     
             
 class StatusBar(object):
@@ -251,6 +280,25 @@ class StatusBar(object):
         self._win.erase()
         try:
             self._win.addstr(0, 1, text, A_NORMAL)
+        except:
+            self._log.debug("Error while printing '%s'", text, exc_info=True)        
+        self._win.refresh()
+
+
+class HitBar(object):
+    
+    def __init__(self, parent_win):
+        parent_height, parent_width = parent_win.getmaxyx()
+        self._win = parent_win.subwin(1, parent_width, parent_height - 2, 0)
+        self._width = self._win.getmaxyx()[1]
+        self._color = Colors.instance()
+        self._win.bkgd(' ', self._color.SEL_HIT_BAR)
+        self._log = get_logger(__name__)
+        
+    def msg(self, text):
+        self._win.erase()
+        try:
+            self._win.addstr(0, 1, text, A_BOLD)
         except:
             self._log.debug("Error while printing '%s'", text, exc_info=True)        
         self._win.refresh()

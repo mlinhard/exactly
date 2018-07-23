@@ -28,27 +28,38 @@ class HitLineLayout(object):
         col_ctx = self._color.SEL_LINE_CTX if selected else self._color.LINE_CTX
         col_pat = self._color.SEL_LINE_PAT if selected else self._color.LINE_PAT
         col_ctx_spec = self._color.SEL_LINE_CTX_SPEC if selected else self._color.LINE_CTX_SPEC
-
+        col_mid = self._color.SEL_LINE_PAT_MID if selected else self._color.LINE_PAT_MID
         h = []
         offset = 0
+        midmark_highlight = None
+
         if len(pad_bef) > 0:
             h.append((offset, len(pad_bef), col_pad))
             offset += len(pad_bef)
+
         if safe_bef.display_length() > 0:
             h.append((offset, safe_bef.display_length(), col_ctx))
             h += [(p + offset, l, col_ctx_spec) for (p, l) in safe_bef.highlights()]
             offset += safe_bef.display_length()
+
         if safe_pat.display_length() > 0:
             h.append((offset, safe_pat.display_length(), col_pat))
             h += [(p + offset, l, col_ctx_spec) for (p, l) in safe_pat.highlights()]
+            if safe_pat.midmark():
+                midmark_highlight = (offset + safe_pat.midmark(), 2, col_mid)
             offset += safe_pat.display_length()
+
         if safe_aft.display_length() > 0:
             h.append((offset, safe_aft.display_length(), col_ctx))
             h += [(p + offset, l, col_ctx_spec) for (p, l) in safe_aft.highlights()]
             offset += safe_aft.display_length()
+
         if len(pad_aft) > 0:
             h.append((offset, len(pad_bef), col_pad))
             offset += len(pad_aft)
+
+        if midmark_highlight:
+            h.append(midmark_highlight)
 
         self._highlights = h
     

@@ -69,11 +69,12 @@ class ExactlyConsole(object):
             return 0
         except Exception as e:
             log.error("An unhandled error occured", exc_info=True)
-            print(e.message)
+            print("ERROR: {0}".format(e))
             return 1
 
     def _refresh_status(self):
         stats = self._stats
+        hit = None
         if stats.done_indexing:
             status_msg = "Indexed {:,} bytes in {:,} files".format(
                 stats.indexed_bytes,
@@ -83,6 +84,7 @@ class ExactlyConsole(object):
                     status_msg += " - {:,} hits".format(self._h.num_hits())
                     if self._selected_hit_idx != None:
                         status_msg += " - current: {:>16,} wsize: {:>4} woffset: {:>16,}".format(self._selected_hit_idx, self._view.max_displayable_hits(), self._displayed_hit_offset)
+                        hit = self._h.hit(self._selected_hit_idx)
                 else:
                     status_msg += " - No hits"
                 self._view.update_search_bar_pattern(self._h.pattern_bytes(), self._h.has_hits())
@@ -92,6 +94,10 @@ class ExactlyConsole(object):
         elif stats.done_loading or stats.done_crawling:
             self._view.update_status_bar("Indexing ...");
             self._view.update_search_bar_message("")
+        if hit:
+            self._view.update_hit_bar("pos: {:>16,} doc_id: {}".format(hit.position, hit.document_id))
+        else: 
+            self._view.update_hit_bar("")
                 
     def _cursor_up(self):
         if not self._h.has_hits():
