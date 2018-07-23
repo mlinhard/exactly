@@ -20,6 +20,10 @@ in the peak and *21N* afterwards. Currently only total text up to 2 GB is suppor
 
 To compute suffix array we use [SA-IS algorithm implementation by Yuta Mori](https://sites.google.com/site/yuta256/sais).
 
+# Demo
+
+[![asciicast](https://asciinema.org/a/Pj6xP9ZP0DRz7OFtBJoLaiYXj.png)](https://asciinema.org/a/Pj6xP9ZP0DRz7OFtBJoLaiYXj)
+
 # Building and installation
 ## Requirements
 
