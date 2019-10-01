@@ -132,7 +132,7 @@ class ExactlyClient(object):
 
     def post(self, relpath, json_req):
         try:
-            return requests.post(self.uri + relpath, json=json.dumps(json_req))
+            return requests.post(self.uri + relpath, json=json_req)
         except ConnectionError:
             raise Exception("Can't connect to index at " + self.uri + ". Make sure that the index is running")
         except Exception as e:
@@ -157,7 +157,7 @@ class ExactlyClient(object):
         if r.status_code == 200:
             return SearchResult.from_json(r.json())
         else:
-            return None
+            raise Exception(f"Unexpected code: {r.status_code}: {r.text}")
         
     def stats(self):
         r = self.get("/stats")

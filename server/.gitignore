@@ -1,4 +1,4 @@
-target
 .project
 .settings
-.classpath
+search/local-data
+exactly-index

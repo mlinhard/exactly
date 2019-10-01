@@ -1,0 +1,8 @@
+github.com/dustin/go-humanize v1.0.0 h1:VSnTsYCnlFHaM2/igO1h6X3HA71jcobQuxemgkq4zYo=
+github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
+github.com/golang-collections/collections v0.0.0-20130729185459-604e922904d3 h1:zN2lZNZRflqFyxVaTIU61KNKQ9C0055u9CAfpmqUvo4=
+github.com/golang-collections/collections v0.0.0-20130729185459-604e922904d3/go.mod h1:nPpo7qLxd6XL3hWJG/O60sR8ZKfMCiIoNap5GvD12KU=
+github.com/karrick/godirwalk v1.11.3 h1:ZrtYOzzHRzItdU1MvkK3CLlhC4m3YTWFgGyiBuSCQSY=
+github.com/karrick/godirwalk v1.11.3/go.mod h1:H5KPZjojv4lE+QYImBI8xVtrBRgYrIVsaRPx4tDPEn4=
+github.com/mlinhard/sais-go v0.1.0 h1:lnKQTaL8WgMP7vuuQPJz0qG/ai4CQ1DH/a6pO63U3Eo=
+github.com/mlinhard/sais-go v0.1.0/go.mod h1:/IZp4BaUbSBZv8bx5YNQKbOxokp9CmrU6/BG2mBVDDw=

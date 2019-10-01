@@ -13,36 +13,40 @@ Options:
   --debug <debug-string> Start PyDev debug server. Debug string format: host:port:pydev_src
 """
 from docopt import docopt
+import pkg_resources
 import subprocess
 import sys
-from exactly import console
-from exactly import set_debug, set_debug_logging
+import json
+from exactly import console, set_debug, set_debug_logging
+from tempfile import NamedTemporaryFile
+
 
 def get_version():
-    try:
-        with open("/opt/exactly/lib/python/VERSION", "r") as f:
-            return f.read()
-    except:
-        return "UNKNOWN"
+    return pkg_resources.require("exactly")[0].version
 
 
 def index(root_folder, debug):
-    cmds = ['java', '-jar' ]
-    if debug:
-        cmds.append('-Dlogging.level.sk.linhard=DEBUG')
-    cmds.append('/opt/exactly/lib/java/exactly-server.jar')
-    cmds.append('--dir=' + root_folder)
-    p = subprocess.Popen(cmds)
-    try:
-        return p.wait()
-    except KeyboardInterrupt:
-        pass
+    with NamedTemporaryFile(mode="w", prefix="exactly-index-", suffix="-config.json") as tmpfile:
+        config = {
+            "listen_address": "localhost:9201",
+            "num_file_loaders": 4,
+            "num_file_staters": 4,
+            "roots": [root_folder],
+            "ignored_directories": []
+        }
+        json.dump(config, tmpfile)
+        tmpfile.flush()
+        p = subprocess.Popen(['exactly-index', '-config=' + tmpfile.name])
+        try:
+            return p.wait()
+        except KeyboardInterrupt:
+            pass
 
-    
+
 def search():
     return console.ExactlyConsole.main()
 
-    
+
 if __name__ == '__main__':
     args = docopt(__doc__, version=get_version())
     set_debug_logging(args['--debug-log'])

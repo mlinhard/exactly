@@ -1,0 +1,2 @@
+%setup -n %{name}-%{unmangled_version} -n %{name}-%{unmangled_version}
+%global debug_package %{nil}
