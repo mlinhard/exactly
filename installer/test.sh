@@ -14,11 +14,11 @@ else
     host_gid=$2
     version=$3
     dnf install -y *.rpm
-    mkdir -p /root/.config/exactly-index
+    mkdir -p /root/.config/exactly
     echo '{
-    "roots" : ["/root/.config/exactly-index"],
+    "roots" : ["/root/.config/exactly"],
     "listen_address": "localhost:9201"
-}' > /root/.config/exactly-index/server-config.json
+}' > /root/.config/exactly/server-config.json
     exactly-index &
     sleep 0.2
     if [ `curl http://localhost:9201/version` == $version ]; then

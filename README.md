@@ -24,6 +24,8 @@ To compute suffix array we use [SA-IS algorithm implementation by Yuta Mori](htt
 
 Currently, the installer is only available for Fedora 64-bit system.
 
+Download RPM from [latest release](https://github.com/mlinhard/exactly/releases)
+
 ## Usage
 
 `exactly index <root>`
