@@ -20,6 +20,10 @@ in the peak and *21N* afterwards. Currently only total text length up to 2 GB is
 
 To compute suffix array we use [SA-IS algorithm implementation by Yuta Mori](https://sites.google.com/site/yuta256/sais).
 
+## Demo
+
+[![asciicast](https://asciinema.org/a/272132.svg)](https://asciinema.org/a/272132)
+
 ## Installation
 
 Currently, the installer is only available for Fedora 64-bit system.
